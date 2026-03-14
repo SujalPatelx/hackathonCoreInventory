@@ -1,13 +1,25 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ResetPass.css";
 
 function ResetPass() {
 
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Reset email sent to:", email);
+
+    // generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // store OTP temporarily
+    localStorage.setItem("resetOTP", otp);
+
+    // demo alert
+    alert("Demo OTP: " + otp);
+
+    navigate("/verify-code");
   };
 
   return (
