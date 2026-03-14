@@ -12,3 +12,59 @@ class User(db.Model):
     role = db.Column(db.String(20))   #role can be staff or manager (staff/manager)
     
 
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+
+
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    sku = db.Column(db.String(100), unique=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    unit = db.Column(db.String(50))
+    reorder_level = db.Column(db.Integer)
+
+
+
+class Warehouse(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    location = db.Column(db.String(200))
+
+
+class Inventory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
+    quantity = db.Column(db.Integer, default=0)
+
+
+
+class Receipt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    supplier = db.Column(db.String(100))
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
+    quantity = db.Column(db.Integer)
+    status = db.Column(db.String(50))  # draft / done
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Delivery(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer = db.Column(db.String(100))
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
+    quantity = db.Column(db.Integer)
+    status = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class StockMove(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
+    quantity = db.Column(db.Integer)
+    move_type = db.Column(db.String(50))  # receipt / delivery / adjustment / transfer
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
