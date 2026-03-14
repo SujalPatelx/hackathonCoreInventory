@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const CATEGORIES = [
   "Electronics",
@@ -12,9 +12,26 @@ const CATEGORIES = [
 ];
 
 export default function AddProductModal({ onClose, onAdd }) {
-  const empty = { name: "", sku: "", category: "", stock: "", price: "" };
+  const empty = { name: "", sku: "", category: "", warehouseId: "", stock: "", price: "" };
   const [form, setForm] = useState(empty);
   const [errors, setErrors] = useState({});
+  const [warehouses, setWarehouses] = useState([]);
+  const [warehousesError, setWarehousesError] = useState("");
+
+  useEffect(() => {
+    const loadWarehouses = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/warehouses");
+        if (!res.ok) throw new Error("Failed to load warehouses");
+        const data = await res.json();
+        setWarehouses(data);
+      } catch (e) {
+        console.error("Error loading warehouses", e);
+        setWarehousesError("Could not load warehouses");
+      }
+    };
+    loadWarehouses();
+  }, []);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -23,6 +40,7 @@ export default function AddProductModal({ onClose, onAdd }) {
     if (!form.name.trim()) e.name = "Product name is required";
     if (!form.sku.trim()) e.sku = "SKU is required";
     if (!form.category) e.category = "Select a category";
+    if (!form.warehouseId) e.warehouseId = "Select a warehouse";
     if (!form.stock || isNaN(form.stock) || Number(form.stock) < 0)
       e.stock = "Enter valid stock quantity";
     if (
@@ -35,16 +53,65 @@ export default function AddProductModal({ onClose, onAdd }) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
-    onAdd({
+
+    const numericPrice = Number(form.price.replace("$", ""));
+
+    const payload = {
       name: form.name,
       sku: form.sku.toUpperCase(),
       category: form.category,
+      warehouse_id: Number(form.warehouseId),
       stock: Number(form.stock),
-      price: form.price.startsWith("$") ? form.price : `$${form.price}`,
-    });
-    onClose();
+      // send numeric price to backend; UI will format with "$"
+      price: numericPrice,
+    };
+
+    try {
+      const res = await fetch("http://localhost:5000/api/products/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        // Simple surface of error – can be improved with UI later
+        alert(errBody.message || "Failed to add product");
+        return;
+      }
+
+      const data = await res.json();
+
+      // Prefer backend product shape if returned, otherwise fall back to local payload
+      const backendProduct = data.product;
+      onAdd(
+        backendProduct
+          ? {
+              name: backendProduct.name,
+              sku: backendProduct.sku,
+              category: backendProduct.category,
+              stock: payload.stock,
+              price:
+                backendProduct.price != null &&
+                !Number.isNaN(Number(backendProduct.price))
+                  ? `$${Number(backendProduct.price).toFixed(2)}`
+                  : `$${numericPrice.toFixed(2)}`,
+            }
+          : {
+              ...payload,
+              price: `$${numericPrice.toFixed(2)}`,
+            },
+      );
+
+      onClose();
+    } catch (e) {
+      console.error("Error calling /api/products/add", e);
+      alert("Unexpected error while adding product");
+    }
   };
 
   const inputStyle = (err) => ({
@@ -207,6 +274,31 @@ export default function AddProductModal({ onClose, onAdd }) {
               </select>
               {errors.category && <div style={errStyle}>⚠ {errors.category}</div>}
             </div>
+          </div>
+
+          {/* Warehouse */}
+          <div>
+            <label style={labelStyle}>DEFAULT WAREHOUSE *</label>
+            <select
+              value={form.warehouseId}
+              onChange={(e) => set("warehouseId", e.target.value)}
+              style={{
+                ...inputStyle(errors.warehouseId),
+                appearance: "none",
+                cursor: "pointer",
+              }}
+            >
+              <option value="">Select warehouse...</option>
+              {warehouses.map((w) => (
+                <option key={w.id} value={w.id}>
+                  {w.name} {w.location ? `(${w.location})` : ""}
+                </option>
+              ))}
+            </select>
+            {errors.warehouseId && <div style={errStyle}>⚠ {errors.warehouseId}</div>}
+            {warehousesError && !errors.warehouseId && (
+              <div style={{ ...errStyle, color: "#ef4444" }}>{warehousesError}</div>
+            )}
           </div>
 
           {/* Stock + Price row */}

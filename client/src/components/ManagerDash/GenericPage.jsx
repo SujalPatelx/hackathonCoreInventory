@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function GenericPage({ title, icon, description }) {
+export default function GenericPage({ title, icon, description, onLogout }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <div
@@ -34,21 +34,40 @@ export default function GenericPage({ title, icon, description }) {
         >
           {description}
         </div>
-        <button
-          style={{
-            marginTop: 24,
-            background: "#6366f1",
-            color: "#fff",
-            border: "none",
-            borderRadius: 10,
-            padding: "10px 24px",
-            fontWeight: 700,
-            fontSize: 14,
-            cursor: "pointer",
-          }}
-        >
-          Get Started
-        </button>
+        {onLogout ? (
+          <button
+            onClick={onLogout}
+            style={{
+              marginTop: 24,
+              background: "#ef4444",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              padding: "10px 24px",
+              fontWeight: 700,
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            Log out
+          </button>
+        ) : (
+          <button
+            style={{
+              marginTop: 24,
+              background: "#6366f1",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              padding: "10px 24px",
+              fontWeight: 700,
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            Get Started
+          </button>
+        )}
       </div>
 
       <div

@@ -7,6 +7,18 @@ import ResetPass from "./components/auth/ResetPass.jsx";
 import NewPassword from "./components/auth/NewPassword";
 import VerifyCode from "./components/auth/VerifyCode";
 import CoreInventoryDashboard from "./components/ManagerDash/CoreInventoryDashboard.jsx";
+import StaffDashboard from "./components/ManagerDash/StaffDashboard.jsx";
+
+function RoleDashboard() {
+  let role = "";
+  try {
+    role = localStorage.getItem("ci_role") || "";
+  } catch {
+    role = "";
+  }
+
+  return role === "staff" ? <StaffDashboard /> : <CoreInventoryDashboard />;
+}
 
 function App() {
   return (
@@ -18,7 +30,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPass />} />
         <Route path="/verify-code" element={<VerifyCode />} />
         <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/dashboard" element={<CoreInventoryDashboard />} />
+        <Route path="/dashboard" element={<RoleDashboard />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,17 +1,92 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddProductModal from "./AddProductModal";
 
-const initialProducts = [
-  { name: "Wireless Mouse", sku: "SKU-WM-001", category: "Electronics", stock: 120, price: "$29.99" },
-  { name: "Mechanical Keyboard", sku: "SKU-KB-044", category: "Peripherals", stock: 85, price: "$89.99" },
-  { name: "USB-C Hub", sku: "SKU-UH-221", category: "Accessories", stock: 200, price: "$39.99" },
-  { name: "4K Webcam", sku: "SKU-WC-118", category: "Electronics", stock: 47, price: "$149.99" },
-  { name: "Standing Desk Mat", sku: "SKU-DM-330", category: "Office", stock: 63, price: "$59.99" },
-];
-
 export default function ProductsPage() {
-  const [list, setList] = useState(initialProducts);
+  const [list, setList] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouse, setSelectedWarehouse] = useState("");
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      try {
+        const [productsRes, warehousesRes] = await Promise.all([
+          fetch("http://localhost:5000/api/products"),
+          fetch("http://localhost:5000/api/warehouses"),
+        ]);
+
+        if (!productsRes.ok) {
+          throw new Error("Failed to load products");
+        }
+        if (!warehousesRes.ok) {
+          throw new Error("Failed to load warehouses");
+        }
+
+        const productsData = await productsRes.json();
+        const warehousesData = await warehousesRes.json();
+
+        const mapped = productsData.map((p) => ({
+          id: p.id,
+          name: p.name,
+          sku: p.sku,
+          category: p.category,
+          stock: p.reorder_level ?? 0,
+          price:
+            p.price != null && !Number.isNaN(Number(p.price))
+              ? `$${Number(p.price).toFixed(2)}`
+              : "-",
+        }));
+
+        setList(mapped);
+        setWarehouses(warehousesData);
+      } catch (e) {
+        console.error("Error fetching products", e);
+        setError("Could not load products from server");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitial();
+  }, []);
+
+  const handleFilterChange = async (warehouseId) => {
+    setSelectedWarehouse(warehouseId);
+    setLoading(true);
+    setError("");
+
+    try {
+      const url =
+        warehouseId === ""
+          ? "http://localhost:5000/api/products"
+          : `http://localhost:5000/api/products/by-warehouse?warehouse_id=${warehouseId}`;
+
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error("Failed to load products");
+      }
+      const data = await res.json();
+      const mapped = data.map((p) => ({
+        id: p.id,
+        name: p.name,
+        sku: p.sku,
+        category: p.category,
+        stock: p.reorder_level ?? 0,
+        price:
+          p.price != null && !Number.isNaN(Number(p.price))
+            ? `$${Number(p.price).toFixed(2)}`
+            : "-",
+      }));
+      setList(mapped);
+    } catch (e) {
+      console.error("Error fetching filtered products", e);
+      setError("Could not load products from server");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAdd = (newProduct) => {
     setList((prev) => [newProduct, ...prev]);
@@ -56,25 +131,52 @@ export default function ProductsPage() {
                 color: "#94a3b8",
               }}
             >
-              Manage your full product catalog · {list.length} items
+              {loading
+                ? "Loading products..."
+                : error
+                ? error
+                : `Manage your full product catalog · ${list.length} items`}
             </div>
           </div>
-          <button
-            onClick={() => setShowModal(true)}
-            style={{
-              background: "linear-gradient(135deg,#6366f1,#818cf8)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 10,
-              padding: "10px 20px",
-              fontWeight: 700,
-              fontSize: 13,
-              cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(99,102,241,0.3)",
-            }}
-          >
-            + Add Product
-          </button>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <div>
+              <select
+                value={selectedWarehouse}
+                onChange={(e) => handleFilterChange(e.target.value)}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1.5px solid #e2e8f0",
+                  fontSize: 13,
+                  background: "#fafafa",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="">All warehouses</option>
+                {warehouses.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={() => setShowModal(true)}
+              style={{
+                background: "linear-gradient(135deg,#6366f1,#818cf8)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 10,
+                padding: "10px 20px",
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(99,102,241,0.3)",
+              }}
+            >
+              + Add Product
+            </button>
+          </div>
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>

@@ -1,6 +1,21 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 export default function Topbar() {
+  const name = useMemo(() => {
+    try {
+      return localStorage.getItem("ci_name") || "Inventory Manager";
+    } catch {
+      return "Inventory Manager";
+    }
+  }, []);
+
+  const initials = useMemo(() => {
+    const parts = String(name).trim().split(/\s+/).filter(Boolean);
+    const first = parts[0]?.[0] || "I";
+    const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+    return (first + last).toUpperCase();
+  }, [name]);
+
   return (
     <header
       style={{
@@ -68,7 +83,7 @@ export default function Topbar() {
                 color: "#1e1b4b",
               }}
             >
-              Alex Morgan
+              {name}
             </div>
             <div style={{ fontSize: 11, color: "#94a3b8" }}>
               Inventory Manager
@@ -88,7 +103,7 @@ export default function Topbar() {
               fontSize: 14,
             }}
           >
-            AM
+            {initials}
           </div>
         </div>
       </div>

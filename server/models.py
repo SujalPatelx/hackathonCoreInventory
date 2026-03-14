@@ -25,6 +25,7 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     unit = db.Column(db.String(50))
     reorder_level = db.Column(db.Integer)
+    price = db.Column(db.Float)
 
 
 
@@ -65,6 +66,7 @@ class StockMove(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
+    to_warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'), nullable=True)
     quantity = db.Column(db.Integer)
     move_type = db.Column(db.String(50))  # receipt / delivery / adjustment / transfer
     created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))

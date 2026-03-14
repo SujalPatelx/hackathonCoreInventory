@@ -20,6 +20,15 @@ function Login() {
         email,
         password,
       });
+      // Persist basic session info for dashboard UI
+      if (res?.data) {
+        try {
+          localStorage.setItem("ci_name", res.data.name || "");
+          localStorage.setItem("ci_role", res.data.role || "");
+        } catch {
+          // ignore storage errors (private mode, etc.)
+        }
+      }
       // Redirect or handle login success
       navigate("/dashboard");
     } catch (err) {

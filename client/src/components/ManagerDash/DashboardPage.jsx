@@ -1,20 +1,84 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
-const statCards = [
-  { label: "Total Products", value: "2,450", change: "+2.5%", color: "#6366f1", bg: "#eef2ff" },
-  { label: "Low Stock Items", value: "12", badge: "Alert", color: "#ef4444", bg: "#fef2f2" },
-  { label: "Incoming Shipments", value: "45", color: "#3b82f6", bg: "#eff6ff" },
-  { label: "Pending Deliveries", value: "18", change: "+12%", color: "#f59e0b", bg: "#fffbeb" },
-];
+export default function DashboardPage({ onOrderMore }) {
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    lowStockCount: 0,
+    incomingShipments: 0,
+    pendingDeliveries: 0,
+  });
+  const [lowStockItems, setLowStockItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-const lowStockItems = [
-  { name: "SteelSeries Gaming Keyboard", sku: "SKU-KB-992", category: "Peripherals", stock: 4 },
-  { name: 'Dell UltraSharp 27"', sku: "SKU-MN-449", category: "Displays", stock: 2 },
-  { name: "Logitech MX Master 3", sku: "SKU-MS-103", category: "Peripherals", stock: 1 },
-  { name: "Samsung 970 EVO SSD", sku: "SKU-ST-210", category: "Storage", stock: 3 },
-];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/products");
+        if (!res.ok) {
+          throw new Error("Failed to load products");
+        }
+        const data = await res.json();
 
-export default function DashboardPage() {
+        // Consider products with reorder_level <= 5 as low stock for now
+        const low = data.filter((p) => (p.reorder_level ?? 0) <= 5);
+
+        setStats((prev) => ({
+          ...prev,
+          totalProducts: data.length,
+          lowStockCount: low.length,
+        }));
+
+        setLowStockItems(
+          low.map((p) => ({
+            id: p.id,
+            name: p.name,
+            sku: p.sku,
+            category: p.category,
+            stock: p.reorder_level ?? 0,
+          })),
+        );
+      } catch (e) {
+        console.error("Error loading dashboard products", e);
+        setError("Could not load product data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const statCards = [
+    {
+      label: "Total Products",
+      value: stats.totalProducts.toString(),
+      change: "+2.5%",
+      color: "#6366f1",
+      bg: "#eef2ff",
+    },
+    {
+      label: "Low Stock Items",
+      value: stats.lowStockCount.toString(),
+      badge: stats.lowStockCount > 0 ? "Alert" : undefined,
+      color: "#ef4444",
+      bg: "#fef2f2",
+    },
+    {
+      label: "Incoming Shipments",
+      value: stats.incomingShipments.toString(),
+      color: "#3b82f6",
+      bg: "#eff6ff",
+    },
+    {
+      label: "Pending Deliveries",
+      value: stats.pendingDeliveries.toString(),
+      change: "+12%",
+      color: "#f59e0b",
+      bg: "#fffbeb",
+    },
+  ];
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Stat Cards */}
@@ -130,7 +194,9 @@ export default function DashboardPage() {
               Low Stock Product Alert
             </div>
             <div style={{ fontSize: 12, color: "#94a3b8" }}>
-              Products currently below their minimum threshold
+              {loading
+                ? "Loading product data..."
+                : error || "Products currently below their minimum threshold"}
             </div>
           </div>
           <button
@@ -177,8 +243,10 @@ export default function DashboardPage() {
             </tr>
           </thead>
           <tbody>
-            {lowStockItems.map((item, i) => (
-              <tr key={i} style={{ borderBottom: "1px solid #f8f8fb" }}>
+            {lowStockItems.map((item, i) => {
+              const critical = (item.stock ?? 0) <= 2;
+              return (
+                <tr key={item.id ?? i} style={{ borderBottom: "1px solid #f8f8fb" }}>
                 <td
                   style={{
                     padding: "12px",
@@ -219,31 +287,35 @@ export default function DashboardPage() {
                 <td style={{ padding: "12px" }}>
                   <span
                     style={{
-                      background: "#fef2f2",
-                      color: "#ef4444",
+                      background: critical ? "#fef2f2" : "#fefce8",
+                      color: critical ? "#ef4444" : "#f59e0b",
                       borderRadius: 6,
                       padding: "3px 10px",
                       fontSize: 12,
                       fontWeight: 700,
                     }}
                   >
-                    Critical Low
+                    {critical ? "Critical Low" : "Low"}
                   </span>
                 </td>
                 <td style={{ padding: "12px" }}>
-                  <span
+                  <button
+                    onClick={() => onOrderMore && onOrderMore(item)}
                     style={{
                       color: "#6366f1",
                       fontWeight: 700,
                       fontSize: 13,
                       cursor: "pointer",
+                      border: "none",
+                      background: "transparent",
+                      padding: 0,
                     }}
                   >
                     Order More
-                  </span>
+                  </button>
                 </td>
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>
