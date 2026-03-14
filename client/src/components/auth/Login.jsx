@@ -1,10 +1,24 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
 
   const [role, setRole] = useState("manager");
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // store role (optional but useful later)
+    localStorage.setItem("role", role);
+
+    if (role === "manager") {
+      navigate("/manager-dashboard");
+    } else {
+      navigate("/staff-dashboard");
+    }
+  };
 
   return (
     <div className="login-page">
@@ -63,7 +77,7 @@ function Login() {
             Please enter your details to sign in.
           </p>
 
-          <form className="login-form">
+          <form className="login-form" onSubmit={handleLogin}>
 
             {/* ROLE */}
             <label className="label">Login as</label>
@@ -90,7 +104,7 @@ function Login() {
 
             {/* EMAIL */}
             <label className="label">Email Address</label>
-            <input type="email" placeholder="name@company.com" />
+            <input type="email" placeholder="name@company.com" required />
 
             {/* PASSWORD */}
             <div className="password-row">
@@ -100,7 +114,7 @@ function Login() {
 
             </div>
 
-            <input type="password" placeholder="••••••••" />
+            <input type="password" placeholder="••••••••" required />
 
             {/* REMEMBER */}
             <div className="remember">
@@ -111,7 +125,7 @@ function Login() {
             </div>
 
             {/* BUTTON */}
-            <button className="login-btn">
+            <button type="submit" className="login-btn">
               Sign In
             </button>
 

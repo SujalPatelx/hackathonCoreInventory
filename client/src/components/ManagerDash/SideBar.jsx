@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 const Sidebar = () => {
   return (
     <aside className="sidebar">
@@ -8,17 +8,23 @@ const Sidebar = () => {
         <h2>CoreInventory</h2>
         <span>MANAGER PORTAL</span>
       </div>
+<nav className="menu">
 
-      <nav className="menu">
-        <a className="active">Dashboard</a>
-        <a>Products</a>
-        <a>Receive Items</a>
-        <a>Deliver Items</a>
-        <a>Transfer Stock</a>
-        <a>Adjust Stock</a>
-        <a>Analytics Reports</a>
-      </nav>
+  <Link to="/manager-dashboard" className="active">Dashboard</Link>
 
+  <Link to="/products">Products</Link>
+
+  <Link to="/receive-items">Receive Items</Link>
+
+  <Link to="/deliver-items">Deliver Items</Link>
+
+  <Link to="/transfer-stock">Transfer Stock</Link>
+
+  <Link to="/adjust-stock">Adjust Stock</Link>
+
+  <Link to="/analytics">Analytics Reports</Link>
+
+</nav>
       <div className="settings">Settings</div>
 
     </aside>
