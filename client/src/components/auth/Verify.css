@@ -5,9 +5,9 @@ box-sizing:border-box;
 font-family: Inter, Arial, sans-serif;
 }
 
-/* PAGE */
 
-.reset-page{
+
+.verify-page{
 min-height:100vh;
 display:flex;
 justify-content:center;
@@ -16,73 +16,57 @@ background:#f1f5f9;
 padding:60px;
 }
 
-/* CARD */
 
-.reset-card{
+
+.verify-card{
 width:100%;
-max-width:640px;        /* much larger card */
+max-width:640px;
 background:white;
-padding:70px 70px;      /* big internal spacing */
+padding:70px;
 border-radius:18px;
 box-shadow:0 15px 45px rgba(0,0,0,0.08);
 text-align:center;
 }
 
-/* TITLE */
 
-.reset-card h2{
-font-size:34px;         /* bigger heading */
+
+.verify-card h2{
+font-size:34px;
 font-weight:600;
 color:#1e293b;
-margin-bottom:14px;
+margin-bottom:12px;
 }
 
-/* DESCRIPTION */
 
-.reset-card p{
+.verify-card p{
 font-size:18px;
 color:#64748b;
-margin-bottom:45px;
+margin-bottom:40px;
 line-height:1.6;
 }
 
-/* FORM */
 
-.reset-card form{
-display:flex;
-flex-direction:column;
-gap:18px;
-text-align:left;
-}
-
-/* LABEL */
-
-.reset-card label{
-font-size:16px;
-font-weight:500;
-color:#475569;
-}
-
-/* INPUT */
-
-.reset-card input{
-padding:18px 20px;       /* larger inputs */
+.verify-card input{
+width:100%;
+padding:18px 20px;
 border-radius:12px;
 border:1px solid #e2e8f0;
-font-size:17px;
+font-size:18px;
 outline:none;
 transition:0.25s;
+text-align:center;
+letter-spacing:6px;
 }
 
-.reset-card input:focus{
+.verify-card input:focus{
 border-color:#6366f1;
 box-shadow:0 0 0 4px rgba(99,102,241,0.15);
 }
 
-/* BUTTON */
 
-.reset-card button{
-margin-top:28px;
+.verify-card button{
+margin-top:30px;
+width:100%;
 padding:18px;
 border:none;
 border-radius:12px;
@@ -94,32 +78,32 @@ cursor:pointer;
 transition:0.25s;
 }
 
-.reset-card button:hover{
+.verify-card button:hover{
 transform:translateY(-2px);
 box-shadow:0 10px 25px rgba(79,70,229,0.35);
 }
 
-/* MOBILE */
 
 @media(max-width:700px){
 
-.reset-card{
+.verify-card{
 padding:45px 30px;
 }
 
-.reset-card h2{
+.verify-card h2{
 font-size:26px;
 }
 
-.reset-card p{
+.verify-card p{
 font-size:16px;
 }
 
-.reset-card input{
+.verify-card input{
 padding:16px;
+font-size:16px;
 }
 
-.reset-card button{
+.verify-card button{
 padding:16px;
 }
 
