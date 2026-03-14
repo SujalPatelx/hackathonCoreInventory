@@ -1,12 +1,13 @@
 import React from "react";
 
-const StatsCards = () => {
-  return (
-    <div className="stats">
-      <div className="card">
-        <p>Total Products</p>
-        <h2>2,450</h2>
-      </div>
+// const StatsCards = () => {
+//   return (
+//     <div className="stats">
+
+//       <div className="card">
+//         <p>Total Products</p>
+//         <h2>2,450</h2>
+//       </div>
 
       <div className="card">
         <p>Low Stock Items</p>
@@ -18,12 +19,13 @@ const StatsCards = () => {
         <h2>45</h2>
       </div>
 
-      <div className="card">
-        <p>Pending Deliveries</p>
-        <h2>18</h2>
-      </div>
-    </div>
-  );
-};
+//       <div className="card">
+//         <p>Pending Deliveries</p>
+//         <h2>18</h2>
+//       </div>
 
-export default StatsCards;
+//     </div>
+//   );
+// };
+
+// export default StatsCards;

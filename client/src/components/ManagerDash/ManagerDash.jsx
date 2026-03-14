@@ -4,7 +4,7 @@ import Topbar from "./Topbar";
 import StatsCards from "./StatsCard";
 import ActivityLog from "./ActivityLog";
 import LowStockTable from "./LowStockTable";
-// import "./Dashboard.css";
+import "./Dashboard.css";
 
 const ManagerDashboard = () => {
   return (

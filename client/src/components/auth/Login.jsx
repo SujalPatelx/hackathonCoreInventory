@@ -4,31 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const [role, setRole] = useState("manager");
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-
-    // Replace with your login API endpoint
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (response.status === 200) {
-      alert("Login successful! Welcome, ");
-      navigate("/manager-dashboard");
-    } else {
-      const errorData = await response.json();
-      alert("Login failed: " + errorData.message);
-    }
-  };
 
   return (
     <div className="login-page">
@@ -76,7 +51,8 @@ function Login() {
           <h2>Welcome back</h2>
           <p className="subtitle">Please enter your details to sign in.</p>
 
-          <form className="login-form" onSubmit={handleSubmit}>
+          <form className="login-form">
+
             {/* ROLE */}
             <label className="label">Login as</label>
 
@@ -100,12 +76,7 @@ function Login() {
 
             {/* EMAIL */}
             <label className="label">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="name@company.com"
-              required
-            />
+            <input type="email" placeholder="name@company.com" />
 
             {/* PASSWORD */}
             <div className="password-row">
@@ -113,12 +84,7 @@ function Login() {
               <Link to="/reset-password">Forgot password?</Link>
             </div>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              required
-            />
+            <input type="password" placeholder="••••••••" />
 
             {/* REMEMBER */}
             <div className="remember">
@@ -127,7 +93,10 @@ function Login() {
             </div>
 
             {/* BUTTON */}
-            <button className="login-btn">Sign In</button>
+            <button className="login-btn">
+              Sign In
+            </button>
+
           </form>
 
           <p className="signup">
