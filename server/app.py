@@ -30,5 +30,24 @@ def login():
 
     return jsonify({"message": "Login successful", "role": user.role, "name": user.name})
 
+
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    role = data.get('role', 'staff')
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({"message": "Email already exists"}), 409
+
+    user = User(name=name, email=email, password=password, role=role)
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({"message": "Signup successful"}), 201
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

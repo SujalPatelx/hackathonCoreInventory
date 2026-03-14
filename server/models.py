@@ -11,3 +11,4 @@ class User(db.Model):
     password = db.Column(db.String(100))
     role = db.Column(db.String(20))   #role can be staff or manager (staff/manager)
     
+
