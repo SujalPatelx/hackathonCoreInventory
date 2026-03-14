@@ -1,9 +1,33 @@
 import React, { useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const [role, setRole] = useState("manager");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/api/login", {
+        email,
+        password,
+      });
+      // Redirect or handle login success
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-page">
@@ -51,8 +75,7 @@ function Login() {
           <h2>Welcome back</h2>
           <p className="subtitle">Please enter your details to sign in.</p>
 
-          <form className="login-form">
-
+          <form className="login-form" onSubmit={handleLogin}>
             {/* ROLE */}
             <label className="label">Login as</label>
 
@@ -76,7 +99,13 @@ function Login() {
 
             {/* EMAIL */}
             <label className="label">Email Address</label>
-            <input type="email" placeholder="name@company.com" />
+            <input
+              type="email"
+              placeholder="name@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
 
             {/* PASSWORD */}
             <div className="password-row">
@@ -84,7 +113,13 @@ function Login() {
               <Link to="/reset-password">Forgot password?</Link>
             </div>
 
-            <input type="password" placeholder="••••••••" />
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
             {/* REMEMBER */}
             <div className="remember">
@@ -92,11 +127,13 @@ function Login() {
               <span>Remember me for 30 days</span>
             </div>
 
-            {/* BUTTON */}
-            <button className="login-btn">
-              Sign In
-            </button>
+            {/* ERROR MESSAGE */}
+            {error && <div className="error-msg">{error}</div>}
 
+            {/* BUTTON */}
+            <button className="login-btn" type="submit" disabled={loading}>
+              {loading ? "Signing In..." : "Sign In"}
+            </button>
           </form>
 
           <p className="signup">

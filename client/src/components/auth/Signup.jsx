@@ -1,41 +1,66 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Signup.css";
 
 const Signup = () => {
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
     role: "Manager",
-    agree: false
+    agree: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError("");
+    setSuccess("");
     if (!formData.agree) {
-      alert("You must agree to Terms and Privacy Policy");
+      setError("You must agree to Terms and Privacy Policy");
       return;
     }
-
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
-
-    alert("Account Created Successfully!");
-    console.log(formData);
+    setLoading(true);
+    try {
+      await axios.post("http://127.0.0.1:5000/api/signup", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role.toLowerCase(),
+      });
+      setSuccess("Account Created Successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        role: "Manager",
+        agree: false,
+      });
+      setTimeout(() => navigate("/dashboard"), 1000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const goToLogin = () => {
@@ -44,7 +69,6 @@ const Signup = () => {
 
   return (
     <div className="signup-page">
-
       {/* NAVBAR */}
       <nav className="navbar">
         <div className="logo">
@@ -59,14 +83,12 @@ const Signup = () => {
 
       {/* FORM CARD */}
       <div className="signup-card">
-
         <h2>Create your account</h2>
         <p className="subtitle">
           Join CoreInventory to manage your assets efficiently
         </p>
 
         <form onSubmit={handleSubmit}>
-
           <label>Full Name</label>
           <input
             type="text"
@@ -88,7 +110,6 @@ const Signup = () => {
           />
 
           <div className="password-row">
-
             <div>
               <label>Password</label>
               <input
@@ -112,7 +133,6 @@ const Signup = () => {
                 required
               />
             </div>
-
           </div>
 
           <label>Role</label>
@@ -134,10 +154,11 @@ const Signup = () => {
             </span>
           </div>
 
-          <button className="create-btn" type="submit">
-            Create Account
+          {error && <div className="error-msg">{error}</div>}
+          {success && <div className="success-msg">{success}</div>}
+          <button className="create-btn" type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create Account"}
           </button>
-
         </form>
 
         <p className="login-text">
@@ -146,14 +167,12 @@ const Signup = () => {
             Sign In
           </span>
         </p>
-
       </div>
 
       <div className="footer">
         <span>🔒 Secure Data</span>
         <span>☁ Cloud Sync</span>
       </div>
-
     </div>
   );
 };

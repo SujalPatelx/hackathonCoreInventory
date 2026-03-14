@@ -9,7 +9,6 @@ import "./Dashboard.css";
 const ManagerDashboard = () => {
   return (
     <div className="dashboard-container">
-      <h1>Dashboard</h1>
       <Sidebar />
 
       <div className="dashboard-main">
