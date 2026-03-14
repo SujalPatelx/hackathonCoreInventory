@@ -49,7 +49,7 @@ class Receipt(db.Model):
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
     quantity = db.Column(db.Integer)
     status = db.Column(db.String(50))  # draft / done
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
 class Delivery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,7 +58,7 @@ class Delivery(db.Model):
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
     quantity = db.Column(db.Integer)
     status = db.Column(db.String(50))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
 
 class StockMove(db.Model):
@@ -67,4 +67,4 @@ class StockMove(db.Model):
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.id'))
     quantity = db.Column(db.Integer)
     move_type = db.Column(db.String(50))  # receipt / delivery / adjustment / transfer
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
