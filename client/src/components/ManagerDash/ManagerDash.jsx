@@ -1,7 +1,7 @@
 import React from "react";
 import Sidebar from "./SideBar";
 import Topbar from "./Topbar";
-// import StatsCards from "./StatsCard";
+import StatsCards from "./StatsCard";
 import ActivityLog from "./ActivityLog";
 import LowStockTable from "./LowStockTable";
 // import "./Dashboard.css";
@@ -13,7 +13,6 @@ const ManagerDashboard = () => {
       <Sidebar />
 
       <div className="dashboard-main">
-
         <Topbar />
 
         <StatsCards />
@@ -28,7 +27,6 @@ const ManagerDashboard = () => {
         </div>
 
         <LowStockTable />
-
       </div>
     </div>
   );

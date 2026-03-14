@@ -1,19 +1,40 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
-
   const [role, setRole] = useState("manager");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    // Replace with your login API endpoint
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 200) {
+      alert("Login successful! Welcome, ");
+      navigate("/manager-dashboard");
+    } else {
+      const errorData = await response.json();
+      alert("Login failed: " + errorData.message);
+    }
+  };
 
   return (
     <div className="login-page">
-
       <div className="login-container">
-
         {/* LEFT PANEL */}
         <div className="left-panel">
-
           <div className="brand">
             <span className="logo">✱</span>
             <h1>CoreInventory</h1>
@@ -32,7 +53,6 @@ function Login() {
           </div>
 
           <div className="testimonial">
-
             <div className="stars">★★★★★</div>
 
             <p>
@@ -41,35 +61,26 @@ function Login() {
             </p>
 
             <div className="testimonial-user">
-
               <div className="avatar"></div>
 
               <div>
                 <strong>Sarah Jenkins</strong>
                 <span>OPERATIONS DIRECTOR, GLOBALLOG</span>
               </div>
-
             </div>
-
           </div>
-
         </div>
 
         {/* RIGHT PANEL */}
         <div className="right-panel">
-
           <h2>Welcome back</h2>
-          <p className="subtitle">
-            Please enter your details to sign in.
-          </p>
+          <p className="subtitle">Please enter your details to sign in.</p>
 
-          <form className="login-form">
-
+          <form className="login-form" onSubmit={handleSubmit}>
             {/* ROLE */}
             <label className="label">Login as</label>
 
             <div className="role-select">
-
               <button
                 type="button"
                 className={`role ${role === "manager" ? "active" : ""}`}
@@ -85,36 +96,38 @@ function Login() {
               >
                 Staff
               </button>
-
             </div>
 
             {/* EMAIL */}
             <label className="label">Email Address</label>
-            <input type="email" placeholder="name@company.com" />
+            <input
+              type="email"
+              name="email"
+              placeholder="name@company.com"
+              required
+            />
 
             {/* PASSWORD */}
             <div className="password-row">
-
               <label className="label">Password</label>
               <Link to="/reset-password">Forgot password?</Link>
-
             </div>
 
-            <input type="password" placeholder="••••••••" />
+            <input
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              required
+            />
 
             {/* REMEMBER */}
             <div className="remember">
-
               <input type="checkbox" />
               <span>Remember me for 30 days</span>
-
             </div>
 
             {/* BUTTON */}
-            <button className="login-btn">
-              Sign In
-            </button>
-
+            <button className="login-btn">Sign In</button>
           </form>
 
           <p className="signup">
@@ -126,11 +139,8 @@ function Login() {
             <a href="#">Terms of Service</a>
             <a href="#">Contact Support</a>
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }

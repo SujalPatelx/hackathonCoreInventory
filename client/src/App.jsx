@@ -25,10 +25,8 @@ function App() {
         <Route path="/verify-code" element={<VerifyCode />} />
 
         <Route path="/new-password" element={<NewPassword />} />
-        //dashboard
-        <Route path="/manager-dashboard" element={<ManagerDashboard />} />
-
     
+        <Route path="/manager-dashboard" element={<ManagerDashboard />} />
     
       </Routes>
 
