@@ -6,7 +6,7 @@ import Signup from "./components/auth/Signup.jsx";
 import ResetPass from "./components/auth/ResetPass.jsx";
 import NewPassword from "./components/auth/NewPassword";
 import VerifyCode from "./components/auth/VerifyCode";
-import ManagerDashboard from "./components/ManagerDash/ManagerDash.jsx";
+import CoreInventoryDashboard from "./components/ManagerDash/CoreInventoryDashboard.jsx";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPass />} />
         <Route path="/verify-code" element={<VerifyCode />} />
         <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/dashboard" element={<ManagerDashboard />} />
+        <Route path="/dashboard" element={<CoreInventoryDashboard />} />
       </Routes>
     </BrowserRouter>
   );
